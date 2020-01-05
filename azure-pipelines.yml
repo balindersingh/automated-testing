@@ -6,7 +6,7 @@
 trigger:
 - master
 
-contianer: 'mcr.microsoft.com/dotnet/framework/sdk:4.8'
+container: 'mcr.microsoft.com/dotnet/framework/sdk:4.8'
 
 variables:
   solution: '**/*.sln'
