@@ -9,7 +9,8 @@ trigger:
 pool:
   vmImage: 'win1803'
 
-container: 'mcr.microsoft.com/dotnet/framework/sdk:4.8'
+container: 'mcr.microsoft.com/windows/servercore:1803'
+# container: 'mcr.microsoft.com/dotnet/framework/sdk:4.8'
 
 variables:
   solution: '**/*.sln'
