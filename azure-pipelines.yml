@@ -18,13 +18,10 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: Bash@3
+- task: CmdLine@2
   inputs:
-    targetType: 'inline'
     script: |
-      # Write your commands here
-      
-      echo 'List of files folder'
+      echo "listing files and folder"
       ls
 #- powershell: |
 #  (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo 
