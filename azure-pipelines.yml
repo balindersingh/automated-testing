@@ -6,8 +6,7 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'windows-2019'
+contianer: 'mcr.microsoft.com/dotnet/framework/sdk:4.8'
 
 variables:
   solution: '**/*.sln'
