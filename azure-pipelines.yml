@@ -18,6 +18,14 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your commands here
+      
+      echo 'List of files folder'
+      ls
 #- powershell: |
 #  (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo 
 #  displayName: 'We want to know the Chrome version installed on this agent machine'
@@ -28,12 +36,20 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
-- task: VSBuild@1
+- task: VisualStudioTestPlatformInstaller@1
+  inputs:
+    packageFeedSelector: 'nugetOrg'
+    versionSelector: 'latestStable'
+
+- task: MSBuild@1
   inputs:
     solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+    msbuildVersion: '16.0'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    clean: true
+    restoreNugetPackages: true
+
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/test/vstest?view=azure-devops
 - task: VSTest@2
   inputs:
