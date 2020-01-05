@@ -1,5 +1,8 @@
-# automated-testing
+# UI testing using selenium in c#
 Testing selenium automation written in c#
 ----------------
-It has a test where it opens https://bing.com website and search for a keyword and then validate the results bsearch engine returns.
-It also has a playlist which includes 3 tests (doing the same thing) which can be executed by selecting from playlist
+It has a test where it opens https://bing.com website and search for login button and click it and then make sure next page has a button with text 'Salesforce'
+We can run the test using following command (tested on Windows) assuming your current terminal is this folder's parent directory
+```
+dotnet vstest "RegressionDemo\\bin\\Debug\\RegressionDemo.dll" /Tests:Dosearch
+```

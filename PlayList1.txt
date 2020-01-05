@@ -1,2 +1,0 @@
-RegressionDemo.Demo.DoSearch
-RegressionDemo.Demo.DoSearch2
