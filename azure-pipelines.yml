@@ -17,10 +17,9 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- powershell: |
-$LocalTempDir = $env:TEMP; $ChromeInstaller = "ChromeInstaller.exe"; (new-object    System.Net.WebClient).DownloadFile('http://dl.google.com/chrome/install/375.126/chrome_installer.exe', "$LocalTempDir\$ChromeInstaller"); & "$LocalTempDir\$ChromeInstaller" /silent /install;
-   (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo 
-  displayName: 'We want to know the Chrome version installed on this agent machine'
+#- powershell: |
+#  (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo 
+#  displayName: 'We want to know the Chrome version installed on this agent machine'
 
 - task: NuGetToolInstaller@1
 
