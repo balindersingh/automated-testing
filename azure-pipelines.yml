@@ -39,7 +39,7 @@ steps:
     #testSuite: # Required when testSelector == TestPlan
     #testConfiguration: # Required when testSelector == TestPlan
     #tcmTestRun: '$(test.RunId)' # Optional
-    searchFolder: '$(build.artifactStagingDirectory)' 
+    searchFolder: '$(System.DefaultWorkingDirectory)' 
     #testFiltercriteria: # Optional
     #runOnlyImpactedTests: False # Optional
     #runAllTestsAfterXBuilds: '50' # Optional
