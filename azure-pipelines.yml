@@ -6,7 +6,7 @@
 trigger:
 - master
 
-container: 'mcr.microsoft.com/dotnet/framework/sdk:latest'
+container: 'mcr.microsoft.com/windows/servercore:1803'
 
 variables:
   solution: '**/*.sln'
