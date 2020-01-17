@@ -2,78 +2,88 @@
 # Build and test ASP.NET projects.
 # Add steps that publish symbols, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
-
-trigger:
-- master
-
-pool:
-  vmImage: 'windows-2019'
-
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  solution: "**/*.sln"
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
 
-steps:
-- powershell: |
-   (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo 
-  displayName: 'We want to know the Chrome version installed on this agent machine'
+jobs:
+  - job: AppOnLinux
+    pool:
+      vmImage: "ubuntu-16.04"
+    steps:
+      - script: echo hello from AppOnLinux
+      - script: echo "##vso[task.setvariable variable=applicationId;isOutput=true]629ae9cb-95e0-46b7-8a88-a4034b68323e"
+        name: MyControllingTask
+  - job: AppOnWindows
+    pool:
+      vmImage: "windows-2019"
+    dependsOn: AppOnLinux
+    variables:
+      newValue: $[dependencies.AppOnLinux.outputs['MyControllingTask.applicationId']]
+    steps:
+      - task: NuGetToolInstaller@1
+      - powershell: |
+          Write-Host "applicationId from AppOnLinux Job: $(newValue)"
+        displayName: "Get output from AppOnLinux Job"
+      - powershell: |
+          (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo
+        displayName: "We want to know the Chrome version installed on this agent machine"
 
-- task: NuGetToolInstaller@1
+      - task: NuGetCommand@2
+        inputs:
+          restoreSolution: "$(solution)"
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+      - task: VSBuild@1
+        inputs:
+          solution: "$(solution)"
+          msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+          platform: "$(buildPlatform)"
+          configuration: "$(buildConfiguration)"
+      # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/test/vstest?view=azure-devops
+      - task: VSTest@2
+        inputs:
+          testSelector: "testAssemblies"
+          testAssemblyVer2: |
+            **\RegressionDemo.dll
+            !**\*TestAdapter.dll
+            !**\obj\**
+          #testPlan: # Required when testSelector == TestPlan
+          #testSuite: # Required when testSelector == TestPlan
+          #testConfiguration: # Required when testSelector == TestPlan
+          #tcmTestRun: '$(test.RunId)' # Optional
+          searchFolder: "$(System.DefaultWorkingDirectory)"
+          #testFiltercriteria: # Optional
+          #runOnlyImpactedTests: False # Optional
+          #runAllTestsAfterXBuilds: '50' # Optional
+          #uiTests: false # Optional
+          #vstestLocationMethod: 'version' # Optional. Options: version, location
+          vsTestVersion: "latest" # Optional. Options: latest, 16.0, 15.0, 14.0, toolsInstaller
+          #vstestLocation: # Optional
+          #runSettingsFile: # Optional
+          #overrideTestrunParameters: # Optional
+          #pathtoCustomTestAdapters: # Optional
+          #runInParallel: False # Optional
+          #runTestsInIsolation: False # Optional
+          #codeCoverageEnabled: False # Optional
+          #otherConsoleOptions: # Optional
+          #distributionBatchType: 'basedOnTestCases' # Optional. Options: basedOnTestCases, basedOnExecutionTime, basedOnAssembly
+          #batchingBasedOnAgentsOption: 'autoBatchSize' # Optional. Options: autoBatchSize, customBatchSize
+          #customBatchSizeValue: '10' # Required when distributionBatchType == BasedOnTestCases && BatchingBasedOnAgentsOption == CustomBatchSize
+          #batchingBasedOnExecutionTimeOption: 'autoBatchSize' # Optional. Options: autoBatchSize, customTimeBatchSize
+          #customRunTimePerBatchValue: '60' # Required when distributionBatchType == BasedOnExecutionTime && BatchingBasedOnExecutionTimeOption == CustomTimeBatchSize
+          #dontDistribute: False # Optional
+          testRunTitle: "Demo UI Testing"
+          platform: "$(buildPlatform)"
+          configuration: "$(buildConfiguration)"
+          #publishRunAttachments: true # Optional
+          #failOnMinTestsNotRun: false # Optional
+          #minimumExpectedTests: '1' # Optional
+          #diagnosticsEnabled: false # Optional
+          #collectDumpOn: 'onAbortOnly' # Optional. Options: onAbortOnly, always, never
+          #rerunFailedTests: False # Optional
+          rerunType: "basedOnTestFailurePercentage" # Optional. Options: basedOnTestFailurePercentage, basedOnTestFailureCount
+          rerunFailedThreshold: "30" # Optional
+          #rerunFailedTestCasesMaxLimit: '5' # Optional
+          rerunMaxAttempts: "3" # Optional
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/test/vstest?view=azure-devops
-- task: VSTest@2
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\RegressionDemo.dll
-      !**\*TestAdapter.dll
-      !**\obj\** 
-    #testPlan: # Required when testSelector == TestPlan
-    #testSuite: # Required when testSelector == TestPlan
-    #testConfiguration: # Required when testSelector == TestPlan
-    #tcmTestRun: '$(test.RunId)' # Optional
-    searchFolder: '$(System.DefaultWorkingDirectory)' 
-    #testFiltercriteria: # Optional
-    #runOnlyImpactedTests: False # Optional
-    #runAllTestsAfterXBuilds: '50' # Optional
-    #uiTests: false # Optional
-    #vstestLocationMethod: 'version' # Optional. Options: version, location
-    vsTestVersion: 'latest' # Optional. Options: latest, 16.0, 15.0, 14.0, toolsInstaller
-    #vstestLocation: # Optional
-    #runSettingsFile: # Optional
-    #overrideTestrunParameters: # Optional
-    #pathtoCustomTestAdapters: # Optional
-    #runInParallel: False # Optional
-    #runTestsInIsolation: False # Optional
-    #codeCoverageEnabled: False # Optional
-    #otherConsoleOptions: # Optional
-    #distributionBatchType: 'basedOnTestCases' # Optional. Options: basedOnTestCases, basedOnExecutionTime, basedOnAssembly
-    #batchingBasedOnAgentsOption: 'autoBatchSize' # Optional. Options: autoBatchSize, customBatchSize
-    #customBatchSizeValue: '10' # Required when distributionBatchType == BasedOnTestCases && BatchingBasedOnAgentsOption == CustomBatchSize
-    #batchingBasedOnExecutionTimeOption: 'autoBatchSize' # Optional. Options: autoBatchSize, customTimeBatchSize
-    #customRunTimePerBatchValue: '60' # Required when distributionBatchType == BasedOnExecutionTime && BatchingBasedOnExecutionTimeOption == CustomTimeBatchSize
-    #dontDistribute: False # Optional
-    testRunTitle: 'Demo UI Testing'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    #publishRunAttachments: true # Optional
-    #failOnMinTestsNotRun: false # Optional
-    #minimumExpectedTests: '1' # Optional
-    #diagnosticsEnabled: false # Optional
-    #collectDumpOn: 'onAbortOnly' # Optional. Options: onAbortOnly, always, never
-    #rerunFailedTests: False # Optional
-    rerunType: 'basedOnTestFailurePercentage' # Optional. Options: basedOnTestFailurePercentage, basedOnTestFailureCount
-    rerunFailedThreshold: '30' # Optional
-    #rerunFailedTestCasesMaxLimit: '5' # Optional
-    rerunMaxAttempts: '3' # Optional
