@@ -12,10 +12,6 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   steps:
-  - script: echo hello from Windows
-  - powershell: |
-    (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo 
-    displayName: 'We want to know the Chrome version installed on this agent machine'
 
   - task: NuGetToolInstaller@1
 
