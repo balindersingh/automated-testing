@@ -10,7 +10,7 @@ variables:
 jobs:
   - job: AppOnLinux
     pool:
-      vmImage: "ubuntu-16.04"
+      vmImage: "ubuntu-18.04"
     container: balindersingh/salesforce-deploy:latest
     steps:
       - script: echo hello from AppOnLinux
