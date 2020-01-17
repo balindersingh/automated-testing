@@ -8,12 +8,24 @@ variables:
   buildConfiguration: "Release"
 
 jobs:
-  - job: Windows
+  - job: AppOnLinux
+    pool:
+      vmImage: "ubuntu-16.04"
+    steps:
+      - script: echo hello from AppOnLinux
+      - script: echo "##vso[task.setvariable variable=applicationId;isOutput=true]629ae9cb-95e0-46b7-8a88-a4034b68323e"
+        name: MyControllingTask
+  - job: AppOnWindows
     pool:
       vmImage: "windows-2019"
+    dependsOn: AppOnLinux
+    variables:
+      newValue: $[dependencies.AppOnLinux.outputs['MyControllingTask.applicationId']]
     steps:
       - task: NuGetToolInstaller@1
-
+      - powershell: |
+          Write-Host "applicationId from AppOnLinux Job: $(newValue)"
+        displayName: "Get output from AppOnLinux Job"
       - powershell: |
           (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo
         displayName: "We want to know the Chrome version installed on this agent machine"
@@ -74,8 +86,4 @@ jobs:
           rerunFailedThreshold: "30" # Optional
           #rerunFailedTestCasesMaxLimit: '5' # Optional
           rerunMaxAttempts: "3" # Optional
-  - job: Linux
-    pool:
-      vmImage: "ubuntu-16.04"
-    steps:
-      - script: echo hello from Linux
+
