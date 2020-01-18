@@ -10,7 +10,7 @@ variables:
 resources:
   containers:
   - container: salesforcedeploy
-    image: balindersingh/salesforce-deploy:azure
+    image: balindersingh/salesforce-deploy:azure-ubuntu
 jobs:
   - job: AppOnLinux
     pool:
