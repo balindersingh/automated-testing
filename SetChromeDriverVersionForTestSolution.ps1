@@ -11,6 +11,10 @@ if($version -ne ""){
 }
 Write-Host "Using chrome version:$ChromeVersion"
 $currentDirectoryPath=Get-Location
+if($(Build.SourcesDirectory) -ne ""){
+    Write-Host "Using Build.SourcesDirectory: $(Build.SourcesDirectory)"
+    $currentDirectoryPath=$(Build.SourcesDirectory)
+}
 $configFilePath="$currentDirectoryPath\RegressionDemo\packages.config"
 $doc = New-Object System.Xml.XmlDocument
 $doc.Load("$configFilePath")
