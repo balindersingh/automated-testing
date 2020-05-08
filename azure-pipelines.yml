@@ -7,10 +7,15 @@ variables:
   buildPlatform: "Any CPU"
   buildConfiguration: "Release"
 
+resources:
+  containers:
+  - container: salesforcedeploy
+    image: balindersingh/salesforce-deploy:azure-ubuntu
 jobs:
   - job: AppOnLinux
     pool:
       vmImage: "ubuntu-16.04"
+    container: salesforcedeploy
     steps:
       - script: echo hello from AppOnLinux
       - script: echo "##vso[task.setvariable variable=applicationId;isOutput=true]629ae9cb-95e0-46b7-8a88-a4034b68323e"
