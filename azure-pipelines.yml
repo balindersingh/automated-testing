@@ -11,6 +11,12 @@ resources:
   containers:
   - container: salesforcedeploy
     image: balindersingh/salesforce-deploy:azure-ubuntu
+
+trigger:
+  branches:
+    include:
+    - master
+
 jobs:
   - job: AppOnLinux
     pool:
@@ -32,8 +38,8 @@ jobs:
           Write-Host "applicationId from AppOnLinux Job: $(newValue)"
         displayName: "Get output from AppOnLinux Job"
       - powershell: |
-          (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo
-        displayName: "We want to know the Chrome version installed on this agent machine"
+          pwsh SetChromeDriverVersionForTestSolution.ps1 -version $(CHROME_DRIVER_VERSION) -path $(Build.Repository.LocalPath)
+        displayName: "Make sure we have the correct chrome driver for our regression test"
 
       - task: NuGetCommand@2
         inputs:
