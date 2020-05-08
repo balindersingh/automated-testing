@@ -1,4 +1,4 @@
-param([string]$version="")
+param([string]$version="",[string]$path="")
 $ChromeVersion=""
 $LocalChromeVersionInfo = (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo
 $LocalChromeVersion=$LocalChromeVersionInfo.ProductVersion
@@ -11,9 +11,9 @@ if($version -ne ""){
 }
 Write-Host "Using chrome version:$ChromeVersion"
 $currentDirectoryPath=Get-Location
-if($(Build.SourcesDirectory) -ne ""){
-    Write-Host "Using Build.SourcesDirectory: $(Build.SourcesDirectory)"
-    $currentDirectoryPath=$(Build.SourcesDirectory)
+if($path -ne ""){
+    Write-Host "Using dynamic path: $path"
+    $currentDirectoryPath=$path
 }
 $configFilePath="$currentDirectoryPath\RegressionDemo\packages.config"
 $doc = New-Object System.Xml.XmlDocument

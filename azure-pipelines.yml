@@ -38,7 +38,7 @@ jobs:
           Write-Host "applicationId from AppOnLinux Job: $(newValue)"
         displayName: "Get output from AppOnLinux Job"
       - powershell: |
-          pwsh SetChromeDriverVersionForTestSolution.ps1 -version $(CHROME_DRIVER_VERSION)
+          pwsh SetChromeDriverVersionForTestSolution.ps1 -version $(CHROME_DRIVER_VERSION) -path $(Build.Repository.LocalPath)
         displayName: "Make sure we have the correct chrome driver for our regression test"
 
       - task: NuGetCommand@2
