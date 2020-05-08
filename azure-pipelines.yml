@@ -11,6 +11,12 @@ resources:
   containers:
   - container: salesforcedeploy
     image: balindersingh/salesforce-deploy:azure-ubuntu
+
+trigger:
+  branches:
+    include:
+    - master
+
 jobs:
   - job: AppOnLinux
     pool:
@@ -32,9 +38,7 @@ jobs:
           Write-Host "applicationId from AppOnLinux Job: $(newValue)"
         displayName: "Get output from AppOnLinux Job"
       - powershell: |
-          pwsh SetChromeDriverVersionForTestSolution.ps1 -version $env:VAR_CHROME_DRIVER_VERSION
-        env:
-          VAR_CHROME_DRIVER_VERSION: $(CHROME_DRIVER_VERSION) # right way to map to an env variable
+          pwsh SetChromeDriverVersionForTestSolution.ps1 -version $(CHROME_DRIVER_VERSION)
         displayName: "Make sure we have the correct chrome driver for our regression test"
 
       - task: NuGetCommand@2
