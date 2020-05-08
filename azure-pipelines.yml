@@ -32,8 +32,10 @@ jobs:
           Write-Host "applicationId from AppOnLinux Job: $(newValue)"
         displayName: "Get output from AppOnLinux Job"
       - powershell: |
-          (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo
-        displayName: "We want to know the Chrome version installed on this agent machine"
+          pwsh SetChromeDriverVersionForTestSolution.ps1 -version $env:VAR_CHROME_DRIVER_VERSION
+        env:
+          VAR_CHROME_DRIVER_VERSION: $(CHROME_DRIVER_VERSION) # right way to map to an env variable
+        displayName: "Make sure we have the correct chrome driver for our regression test"
 
       - task: NuGetCommand@2
         inputs:
